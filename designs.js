@@ -1,3 +1,4 @@
+let pCanvas = $('#pixelCanvas'); // Set canvas grid variable
 /**
  * @description erases the previous grid and creates a new one based on
  * the current user size values
@@ -21,57 +22,72 @@ function makeGrid() {
   } // end while loop
   //APPEND string which becomes table to canvas element adds to the DOM
   pCanvas.append(rows);
-}
+} // end makeGrid()
 /**
- * @description effectively an OnReady function that passes a function into the jQuery
- * object which runs when the document is ready. Here we add listeners for
- * canvas and submit events
+ * @description Passes a function into the jQuery object which runs when
+ * the document is ready. Contains a single call to prepare a blank grid.
  */
 $(function() {
   makeGrid();
 }); //end on ready
-
-// ATTACH delegated event handlers
-
-// Handel submit events
+/**
+ * @description paints or restores the white canvas, this simulates erase by
+ * restoring white canvas if the current cell is painted. A more expressive
+ * experience for the user. Eliminates the need for erase function or
+ * right click / double click action.
+ * @param currentTableCell the current td cell from the event handler
+ */
+function paintOrRestore(currentTableCell) {
+  let color = $("#colorPicker").val();
+  // because browsers will vary in the value of the color, just compare
+  // here we compare the default css style to the current td cell
+  // (in case it has been colored)
+  if (currentTableCell.css("backgroundColor") === $('td').css('background-color')) {
+    currentTableCell.css('background-color', color);
+  } else {
+    currentTableCell.css('background-color', $('td').css('background-color'));
+  }
+} // end paintOrRestore
+/**
+ * @description Handles submit events
+ // * @param  {document#event:submit} event
+ // * @listens document#submit
+ */
 $('#sizePicker').submit(function(e) {
   makeGrid();
   e.preventDefault();
 });
-// Set canvas variables
-let pCanvas = $('#pixelCanvas');
-const defaultBlankCanvasColor = "#ffffff";
-
-// SIMULATE ERASERS by restoring white for any table cell in canvas
-// by Doubleclick
-pCanvas.on("dblclick", "td", function(e) {
-  e.preventDefault(); //avoid any other default actions
-  $(this).css("background-color", defaultBlankCanvasColor);
-});
-// by right click
-pCanvas.on("contextmenu", "td", function(e) {
-  e.preventDefault(); //avoid contextmenu in canvas table/grid
-  $(this).css("background-color", defaultBlankCanvasColor);
-});
-
-// ENABLE CLICK AND DRAG
-let mouseDown = false;
-// instead of on click use mousedown so first block is painted when doing a click and DRAG
+// ENABLE CLICK AND DRAG PAINTING or ERASING! instead of on-click
+// use mousedown so first block is painted when doing a click and DRAG
 // user thinks "click and drag" but really it's mousedown and drag
-pCanvas.on("mousedown", "td", function(e) {
+let mouseDown = false;
+/**
+ * @description Handles mousedown in table cell events
+ * @param  {td#event:mousedown} event
+ * @listens td#mousedown
+ */
+pCanvas.on('mousedown', 'td', function(e) {
   e.preventDefault(); //avoid any other default actions
   mouseDown = true;
-  let color = $("#colorPicker").val();
-  $(this).css("background-color", color);
+  paintOrRestore($(this));
 });
-pCanvas.on("mouseup", "td", function(e) {
-  e.preventDefault(); //avoid any other default actions
-  mouseDown = false;
-});
-pCanvas.on("mouseover", "td", function(e) {
+/**
+ * @description Handles mouseover in table cell events
+ * @param  {td#event:mouseover} event
+ * @listens td#mouseover
+ */
+pCanvas.on('mouseover', 'td', function(e) {
   e.preventDefault(); //avoid any other default actions
   if (mouseDown) {
-    let color = $("#colorPicker").val();
-    $(this).css("background-color", color);
+    paintOrRestore($(this));
   }
+});
+/**
+ * @description Handles mouseup events at document level so user can lift to
+ * stop painting/erasing even if outside canvas. Even if re-entering canvas.
+ * @param  {document#event:mouseup} event
+ * @listens document#mouseup
+ */
+$(document).mouseup(function() {
+  mouseDown = false;
 });
