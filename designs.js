@@ -1,4 +1,4 @@
-let pCanvas = $('#pixelCanvas'); // Set canvas grid variable
+const pCanvas = $('#pixelCanvas'); // Set canvas grid variable
 /**
  * @description erases the previous grid and creates a new one based on
  * the current user size values
@@ -44,19 +44,37 @@ function paintOrRestore(currentTableCell) {
   // (in case it has been colored)
   if (currentTableCell.css('backgroundColor') === $('td').css('background-color')) {
     currentTableCell.css('background-color', color);
-  } else {// 'erase' by restoring default color
+  } else { // 'erase' by restoring default color
     currentTableCell.css('background-color', $('td').css('background-color'));
   }
 } // end paintOrRestore
 /**
- * @description Handles submit events
+ * @description Handles submit events from color picker
  * @param  {document:event:submit} e - event
  * @listens document:submit
  */
 $('#sizePicker').submit(function(e) {
-  makeGrid();//creates grid based on current size and color
-  e.preventDefault();//avoids default grid size
+  makeGrid(); //creates grid based on current size and color
+  e.preventDefault(); //avoids default grid size
 });
+/**
+ * @description Handles submit events from colorAndBackgroundPicker
+ * @param  {document:event:submit} e - event
+ * @listens document:submit
+ */
+$('#colorAndBackgroundPicker').submit(function(e) {
+  paintBackground(); //creates grid based on current size and color
+  e.preventDefault(); //avoids default grid size
+});
+/**
+ * @description uses current picked color to reset the entire canvas and
+ * this color is the sticky default when 'erasing'.
+ */
+function paintBackground() {
+  const currentColor = $('#colorPicker').val();
+  $('td').css('background-color', currentColor);
+} // end paintBackground()
+
 // ENABLE CLICK AND DRAG PAINTING or ERASING! instead of on-click
 // use mousedown so first block is painted when doing a click and DRAG
 // user thinks "click and drag" but really it's mousedown and drag
