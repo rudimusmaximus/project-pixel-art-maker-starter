@@ -31,11 +31,11 @@ $(function() {
   makeGrid();
 }); //end on ready
 /**
- * @description paints or restores the white canvas, this simulates erase by
- * restoring white canvas if the current cell is painted. A more expressive
- * experience for the user. Eliminates the need for erase function or
- * right click / double click action.
- * @param {td} currentTableCell - the current td cell from the event handler
+ * @description paints or restores the default css canvas color, this
+ * simulates erase by restoring white canvas if the current cell is
+ * painted. A more expressive experience for the user. Eliminates the
+ * need for erase function or right click / double click action.
+ * @param {td} currentTableCell - current td cell from event handler
  */
 function paintOrRestore(currentTableCell) {
   let color = $('#colorPicker').val();
@@ -63,7 +63,7 @@ $('#sizePicker').submit(function(e) {
  * @listens document:submit
  */
 $('#colorAndBackgroundPicker').submit(function(e) {
-  paintBackground(); //creates grid based on current size and color
+  paintBackground(); //paints entire grid with current color
   e.preventDefault(); //avoids default grid size
 });
 /**
@@ -77,7 +77,7 @@ function paintBackground() {
 
 // ENABLE CLICK AND DRAG PAINTING or ERASING! instead of on-click
 // use mousedown so first block is painted when doing a click and DRAG
-// user thinks "click and drag" but really it's mousedown and drag
+// user thinks "click and drag" but really it's mousedown and over
 let mouseDown = false;
 /**
  * @description Handles mousedown in table cell events
